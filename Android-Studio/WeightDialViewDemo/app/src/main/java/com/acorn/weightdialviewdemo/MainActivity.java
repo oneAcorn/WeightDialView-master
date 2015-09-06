@@ -36,8 +36,7 @@ public class MainActivity extends ActionBarActivity {
                     @Override
                     public void onScaleChange(int newScale,
                                               boolean isClockwise, int circles) {
-                        weightDialView.setText("" + circles + "." + newScale
-                                + "kg");
+                        weightDialView.setText("" + weightDialView.getValue() + "kg");
                     }
                 });
 
