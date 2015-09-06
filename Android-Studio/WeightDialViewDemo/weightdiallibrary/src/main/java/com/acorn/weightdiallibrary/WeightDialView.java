@@ -263,6 +263,14 @@ public class WeightDialView extends View {
     public int getScale() {
         return curScale;
     }
+    
+    public int getCircle() {
+        return circle;
+    }
+
+    public float getValue() {
+        return Float.valueOf(circle + "." + (curScale > 9 ? curScale : "0" + curScale));
+    }
 
     public int getTotalScale() {
         return totalScale;
