@@ -35,8 +35,7 @@ public class MainActivity extends Activity {
 					@Override
 					public void onScaleChange(int newScale,
 							boolean isClockwise, int circles) {
-						weightDialView.setText("" + circles + "." + newScale
-								+ "kg");
+						weightDialView.setText("" + weightDialView.getValue() + "kg");
 					}
 				});
 
