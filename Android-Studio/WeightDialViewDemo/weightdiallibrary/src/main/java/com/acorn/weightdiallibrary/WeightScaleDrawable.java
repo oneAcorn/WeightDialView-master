@@ -60,6 +60,7 @@ public class WeightScaleDrawable extends Drawable {
     private int circleBackgroundSize;
     private Paint circleBackgroundPaint;
     private Bitmap backgroundBitmap;
+    private boolean isShowScaleLine=true;
 
     public WeightScaleDrawable() {
         this(DEFAULT_SCALE);
@@ -90,10 +91,10 @@ public class WeightScaleDrawable extends Drawable {
 
     @Override
     public void draw(Canvas canvas) {
-        if (!path.isEmpty()) {
-            if (circleBackgroundPaint != null && backgroundBitmap != null) {
-                canvas.drawCircle(cX, cY, radius, circleBackgroundPaint);
-            }
+        if (circleBackgroundPaint != null && backgroundBitmap != null) {
+            canvas.drawCircle(cX, cY, radius, circleBackgroundPaint);
+        }
+        if (!path.isEmpty()&&isShowScaleLine) {
             canvas.drawPath(path, paint);
         }
     }
@@ -138,6 +139,26 @@ public class WeightScaleDrawable extends Drawable {
             return;
         this.totalScale = scale;
         createDrawGraph();
+        invalidateSelf();
+    }
+
+    public int getTotalScale() {
+        return totalScale;
+    }
+
+    /**
+     * 显示刻度线
+     */
+    public void showScaleLine(){
+        isShowScaleLine=true;
+        invalidateSelf();
+    }
+
+    /**
+     * 隐藏刻度线
+     */
+    public void hideScaleLine() {
+        isShowScaleLine=false;
         invalidateSelf();
     }
 

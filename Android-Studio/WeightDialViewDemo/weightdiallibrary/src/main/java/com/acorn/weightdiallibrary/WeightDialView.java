@@ -101,6 +101,11 @@ public class WeightDialView extends View {
      * 按下事件
      */
     private boolean isFirstDown;
+    /**
+     * 0~1,越小越靠近边缘,越大越靠近圆心
+     */
+    private float thumbDistance = 0.2f;
+    private float curAngle;
 
     public WeightDialView(Context context) {
         this(context, null);
@@ -171,8 +176,29 @@ public class WeightDialView extends View {
      * @param scale
      */
     public void setTotalScale(int scale) {
-        if (weightScaleDrawable != null) {
-            weightScaleDrawable.setScale(scale);
+        if (scale <= 0) {
+            throw new RuntimeException("DialView's totalScale must more than 0");
+        }
+        weightScaleDrawable.setScale(scale);
+        this.totalScale = scale;
+        computeThumbResetAnimator(false);
+    }
+
+    /**
+     * 显示刻度线
+     */
+    public void showScaleLine() {
+        if (null != weightScaleDrawable) {
+            weightScaleDrawable.showScaleLine();
+        }
+    }
+
+    /**
+     * 隐藏刻度线
+     */
+    public void hideScaleLine() {
+        if (null != weightScaleDrawable) {
+            weightScaleDrawable.hideScaleLine();
         }
     }
 
@@ -227,7 +253,7 @@ public class WeightDialView extends View {
     }
 
     /**
-     * 设置刻度
+     * 设置当前刻度
      *
      * @param scale
      */
@@ -242,20 +268,27 @@ public class WeightDialView extends View {
 
     /**
      * 设置表盘背景
+     *
      * @param bitmap
      */
-    public void setCircleBackground(Bitmap bitmap){
+    public void setCircleBackground(Bitmap bitmap) {
         weightScaleDrawable.setBackground(bitmap);
     }
 
     /**
      * 设置刻度线的颜色
+     *
      * @param color
      */
-    public void setScaleLineColor(int color){
+    public void setScaleLineColor(int color) {
         weightScaleDrawable.setScaleLineColor(color);
     }
 
+    /**
+     * 设置已走圈数
+     *
+     * @param circle
+     */
     public void setCircle(int circle) {
         this.circle = circle;
     }
@@ -263,10 +296,19 @@ public class WeightDialView extends View {
     public int getScale() {
         return curScale;
     }
-    
+
     public int getCircle() {
         return circle;
     }
+
+    public int getCurScale() {
+        return curScale;
+    }
+
+    public boolean isClockwise() {
+        return isClockwise;
+    }
+
 
     public float getValue() {
         return Float.valueOf(circle + "." + (curScale > 9 ? curScale : "0" + curScale));
@@ -294,17 +336,33 @@ public class WeightDialView extends View {
         textPaint.setTextSize(sp2px(getContext(), size));
     }
 
+    /**
+     * @param distance 0~1,越小越靠近边缘,越大越靠近圆心
+     */
+    public void setThumbDistance(float distance) {
+        if (Float.compare(distance, 0) == -1 || Float.compare(distance, 1) == 1) {
+            throw new RuntimeException("you distance more than 1 or less than 0");
+        }
+        this.thumbDistance = distance;
+        updateThumbByAngle(curAngle);
+    }
+
+    public float getThumbDistance() {
+        return thumbDistance;
+    }
+
     private void updateThumbByScale(int scale) {
         updateThumbByAngle(weightScaleDrawable.scaleToAngle(scale));
     }
 
     private void updateThumbByAngle(float angle) {
+        this.curAngle = angle;
         angle = angle % 360f; //取余运算保证angle范围在0~360
         //刻度盘半径
         int weightScaleRadius = radius;
         //指示器宽度的一半
         int thumbHalfWidth = thumbDrawable.getIntrinsicWidth() / 2;
-        int distance = weightScaleRadius - weightScaleRadius / 5 - thumbHalfWidth - (int) (3 * density);
+        int distance = weightScaleRadius - (int) (weightScaleRadius * thumbDistance) - thumbHalfWidth - (int) (3 * density);
         //计算出thumbDrawable圆心位置
         PointF pointF = CircleUtil.getPositionByAngle(angle, distance, cX, cY);
         //根据圆心计算ltrb
@@ -343,11 +401,16 @@ public class WeightDialView extends View {
             isClockwise = newAngle > lastAngle;
         }
 //        LogUtil.i("newAngle:"+newAngle+",lastAngle:"+lastAngle+",isClockwise:"+isClockwise);
-        notifyScale(newAngle, isClockwise, false);
+        notifyScale(newAngle, isClockwise, true);
         lastAngle = angle;
     }
 
-    private void notifyScale(float newAngle, boolean isClockwise, boolean isResetNotify) {
+    /**
+     * @param newAngle
+     * @param isClockwise     是否顺时针
+     * @param isComputeCircle 是否计算圈数
+     */
+    private void notifyScale(float newAngle, boolean isClockwise, boolean isComputeCircle) {
         if (isResetting)
             return;
         //将angle取正
@@ -357,10 +420,12 @@ public class WeightDialView extends View {
         curScale = newScale;
 //        LogUtil.i("notifyScale(),isClockwise:" + isClockwise + ",newScale:" + newScale + ",lastScale:" + lastScale + "," + isResetNotify);
         if (!isFirstDown) { //因为第一次按下时会有些许偏移导致角度改变且无法准确测量时针方向,所以不判断圈数
-            if (isClockwise && newScale < lastScale) {
-                circle++;
-            } else if (!isClockwise && newScale > lastScale) {
-                circle--;
+            if (isComputeCircle) {
+                if (isClockwise && newScale < lastScale) {
+                    circle++;
+                } else if (!isClockwise && newScale > lastScale) {
+                    circle--;
+                }
             }
         } else
             isFirstDown = false;
@@ -461,14 +526,14 @@ public class WeightDialView extends View {
             }
             thumbInertiaAnim.start();
         } else {
-            computeThumbResetAnimator();
+            computeThumbResetAnimator(true);
         }
     }
 
     /**
      * 计算thumb复位动画
      */
-    private void computeThumbResetAnimator() {
+    private void computeThumbResetAnimator(boolean isComputeCircle) {
         //触摸点指向的角度
         float thumbAngle;
         if (newAngle < 0)
@@ -484,7 +549,7 @@ public class WeightDialView extends View {
 //        LogUtil.i("newAngle:" + thumbAngle + ",isClockwise:" + isClockwise + ",apprScale:" + approximateScale);
         if (diffAngle > 5) { //超过一定角度用动画复位
             if (thumbResetAnim == null) {
-                initResetAnimator();
+                initResetAnimator(isComputeCircle);
             }
             long duration = (int) (diffAngle * 10);
             thumbResetAnim.setFloatValues(thumbAngle, angleOfScale);
@@ -495,7 +560,7 @@ public class WeightDialView extends View {
             isResetting = true;
             updateThumbByScale(approximateScale);
             isResetting = false;
-            notifyScale(newAngle, isClockwise, true);
+            notifyScale(newAngle, isClockwise, isComputeCircle);
         }
     }
 
@@ -507,7 +572,7 @@ public class WeightDialView extends View {
         }
     };
 
-    private void initResetAnimator() {
+    private void initResetAnimator(final boolean isComputeCircle) {
         thumbResetAnim = ValueAnimator.ofFloat(0f, 0f);
         thumbResetAnim.setInterpolator(new DecelerateInterpolator());
         thumbResetAnim.addUpdateListener(thumbResetUpdateListener);
@@ -522,13 +587,13 @@ public class WeightDialView extends View {
             public void onAnimationEnd(Animator animation) {
 //                LogUtil.i("onAnimationEnd():" + newAngle + ",isClockwise:" + isClockwise);
                 isResetting = false;
-                notifyScale(newAngle, isClockwise, true);
+                notifyScale(newAngle, isClockwise, isComputeCircle);
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
                 isResetting = false;
-                notifyScale(newAngle, isClockwise, true);
+                notifyScale(newAngle, isClockwise, isComputeCircle);
             }
 
             @Override
@@ -551,7 +616,7 @@ public class WeightDialView extends View {
             @Override
             public void onAnimationEnd(Animator animation) {
 //                LogUtil.i("Inertia anim end" + newAngle);
-                computeThumbResetAnimator();
+                computeThumbResetAnimator(true);
             }
 
             @Override
@@ -570,7 +635,7 @@ public class WeightDialView extends View {
     protected boolean verifyDrawable(Drawable who) {
 //        return super.verifyDrawable(who);
         //允许drawable刷新自己以执行动画
-        return who == thumbDrawable || who==weightScaleDrawable|| super.verifyDrawable(who);
+        return who == thumbDrawable || who == weightScaleDrawable || super.verifyDrawable(who);
     }
 
     public void setOnScaleChangeListener(OnScaleChangeListener onScaleChangeListener) {
@@ -590,6 +655,11 @@ public class WeightDialView extends View {
     }
 
     public interface OnScaleChangeListener {
+        /**
+         * @param newScale    当前刻度
+         * @param isClockwise 是否为顺时针转动
+         * @param circles     圈数
+         */
         void onScaleChange(int newScale, boolean isClockwise, int circles);
     }
 }

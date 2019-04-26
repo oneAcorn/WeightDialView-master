@@ -88,7 +88,7 @@ public class ThumbDrawable extends Drawable {
     }
 
     public void unPress() {
-        if(pressAnim.isRunning())
+        if (pressAnim.isRunning())
             pressAnim.cancel();
         pressAnim.reverse();
     }

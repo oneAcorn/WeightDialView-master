@@ -5,69 +5,101 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.acorn.weightdiallibrary.WeightDialView;
 import com.acorn.weightdialviewdemo.utils.ImageUtil;
 
 
 public class MainActivity extends AppCompatActivity {
-
-    private WeightDialView weightDialView, weightDialView2;
-    private float curNumber;
-    private boolean flag = false;
+    private WeightDialView weightDialView;
+    private Button bgBtn, listenerBtn;
+    private TextView listenerTv;
+    private WeightDialView.OnScaleChangeListener mScaleChangeListener = new WeightDialView.OnScaleChangeListener() {
+        @Override
+        public void onScaleChange(int newScale, boolean isClockwise, int circles) {
+            listenerTv.setText("当前刻度:" + newScale + ",圈数:" + circles + ",顺时针:" + isClockwise);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // testIV= (ImageView) findViewById(R.id.test_iv);
-        // WeightScaleDrawable drawable=new WeightScaleDrawable();
-        // drawable.setBounds(0,0,200,200);
-        // testIV.setImageDrawable(drawable);
-        curNumber = 32.33f;
-        weightDialView = (WeightDialView) findViewById(R.id.weightdialview);
-        weightDialView2 = (WeightDialView) findViewById(R.id.weightdialview2);
-        weightDialView.setText(String.valueOf(curNumber));
-        weightDialView.setCircle(61);
-        weightDialView.setScale(33);
+        weightDialView = findViewById(R.id.weightdialview);
+        bgBtn = findViewById(R.id.background_btn);
+        listenerBtn = findViewById(R.id.listener_btn);
+        listenerTv = findViewById(R.id.listener_tv);
+
+        weightDialView.setCircle(0);
+        weightDialView.setScale(0);
         weightDialView.setTextSize(16);
-        weightDialView
-                .setOnScaleChangeListener(new WeightDialView.OnScaleChangeListener() {
-                    @Override
-                    public void onScaleChange(int newScale,
-                                              boolean isClockwise, int circles) {
-                        weightDialView.setText("" + weightDialView.getValue() + "kg");
-                    }
-                });
+    }
 
-        findViewById(R.id.change_btn).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (flag)
-                            weightDialView.setCircleBackground(null);
-                        else
-                            weightDialView.setCircleBackground(ImageUtil
-                                    .drawableToBitamp(getResources()
-                                            .getDrawable(R.mipmap.bg2)));
-                        flag = !flag;
-                    }
-                });
+    public void addTotalScale(View view) {
+        try {
+            weightDialView.setTotalScale(weightDialView.getTotalScale() + 10);
+        } catch (Exception e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
 
-        weightDialView2.setScale(2);
-        weightDialView2.setTextSize(22);
-        weightDialView2.setCircleBackground(ImageUtil
-                .drawableToBitamp(getResources().getDrawable(R.mipmap.bg)));
-        weightDialView2.setScaleLineColor(0xff000000);
-        weightDialView2
-                .setOnScaleChangeListener(new WeightDialView.OnScaleChangeListener() {
-                    @Override
-                    public void onScaleChange(int newScale,
-                                              boolean isClockwise, int circles) {
-                        weightDialView2.setText("" + newScale + ","
-                                + (isClockwise ? "t" : "f") + "," + circles);
-                    }
-                });
+    public void reduceTotalScale(View view) {
+        try {
+            weightDialView.setTotalScale(weightDialView.getTotalScale() - 10);
+        } catch (Exception e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void showScaleLine(View view) {
+        weightDialView.showScaleLine();
+    }
+
+    public void hideScaleLine(View view) {
+        weightDialView.hideScaleLine();
+    }
+
+    private boolean flag = false;
+
+    public void toggleBackground(View view) {
+        if (flag) {
+            weightDialView.setCircleBackground(null);
+        } else {
+            weightDialView.setCircleBackground(ImageUtil
+                    .drawableToBitamp(getResources()
+                            .getDrawable(R.mipmap.watch_dial)));
+            weightDialView.setTotalScale(12);
+        }
+        bgBtn.setText(flag ? "显示背景图" : "隐藏背景图");
+        flag = !flag;
+    }
+
+    public void addThumbDistance(View view) {
+        try {
+            weightDialView.setThumbDistance(weightDialView.getThumbDistance() - 0.05f);
+        } catch (Exception e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void reduceThumbDistance(View view) {
+        try {
+            weightDialView.setThumbDistance(weightDialView.getThumbDistance() + 0.05f);
+        } catch (Exception e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private boolean listenerFlag;
+
+    public void toggleListener(View view) {
+        weightDialView.setOnScaleChangeListener(listenerFlag ? null : mScaleChangeListener);
+        listenerBtn.setText(listenerFlag ? "设置监听器" : "取消监听器");
+        listenerTv.setText(listenerFlag ? "" : "当前刻度:" + weightDialView.getCurScale() + ",圈数:" + weightDialView.getCircle() + ",顺时针:" + weightDialView.isClockwise());
+        listenerFlag = !listenerFlag;
     }
 
     @Override
