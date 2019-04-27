@@ -7,6 +7,7 @@
 <h3>效果图</h3>
 
 ![github](https://github.com/oneAcorn/WeightDialView-master/blob/master/20190427_112059.gif)
+![github](https://github.com/oneAcorn/WeightDialView-master/blob/master/20190427_111630.gif)
 
 <h3>一 引用方法</h3>
 
@@ -77,6 +78,7 @@ dependencies {
 
 ![github](https://github.com/oneAcorn/WeightDialView-master/blob/master/20190427_111600.gif)
 
+```java
     //增加指针与圆心的距离比
     public void addThumbDistance(View view) {
         try {
@@ -100,6 +102,7 @@ dependencies {
         }
         notifyStatus();
     }
+```
    
 5.显示/隐藏刻度线,显示/隐藏背景图
 
