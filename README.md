@@ -8,5 +8,5 @@
 
 ![github](https://github.com/oneAcorn/WeightDialView-master/blob/master/effect_gif.gif)
 
-Android Studio版和Eclipse版都有.
+
 
