@@ -1,1 +1,1 @@
-include ':app', ':weightdiallibrary'
+include ':app', ':library'
