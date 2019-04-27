@@ -29,18 +29,25 @@
         android:gravity="center_vertical"
         android:textSize="12sp"/>
 
+    <TextView
+        android:id="@+id/status_tv"
+        android:layout_below="@id/weightdialview"
+        android:layout_width="wrap_content"
+        android:text=""
+        android:layout_height="wrap_content"/>
+
     <Button
         android:id="@+id/add_total_scale_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/weightdialview"
+        android:layout_below="@id/status_tv"
         android:onClick="addTotalScale"
         android:text="增加10点总刻度"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/weightdialview"
+        android:layout_below="@id/status_tv"
         android:layout_toRightOf="@id/add_total_scale_btn"
         android:onClick="reduceTotalScale"
         android:text="减少10点总刻度"/>

@@ -12,11 +12,14 @@ import android.widget.Toast;
 import com.acorn.weightdiallibrary.WeightDialView;
 import com.acorn.weightdialviewdemo.utils.ImageUtil;
 
+import java.text.DecimalFormat;
+
 
 public class MainActivity extends AppCompatActivity {
     private WeightDialView weightDialView;
     private Button bgBtn, listenerBtn;
     private TextView listenerTv;
+    private TextView statusTv;
     private WeightDialView.OnScaleChangeListener mScaleChangeListener = new WeightDialView.OnScaleChangeListener() {
         @Override
         public void onScaleChange(int newScale, boolean isClockwise, int circles) {
@@ -32,10 +35,18 @@ public class MainActivity extends AppCompatActivity {
         bgBtn = findViewById(R.id.background_btn);
         listenerBtn = findViewById(R.id.listener_btn);
         listenerTv = findViewById(R.id.listener_tv);
+        statusTv = findViewById(R.id.status_tv);
 
         weightDialView.setCircle(0);
         weightDialView.setScale(0);
         weightDialView.setTextSize(16);
+
+        notifyStatus();
+    }
+
+    private void notifyStatus() {
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        statusTv.setText(String.format("当前总刻度:%s,指针与圆心距离比:%s", weightDialView.getTotalScale(), decimalFormat.format(1 - weightDialView.getThumbDistance())));
     }
 
     public void addTotalScale(View view) {
@@ -44,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
         }
+        notifyStatus();
     }
 
     public void reduceTotalScale(View view) {
@@ -52,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
         }
+        notifyStatus();
     }
 
     public void showScaleLine(View view) {
@@ -74,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
             weightDialView.setTotalScale(12);
         }
         bgBtn.setText(flag ? "显示背景图" : "隐藏背景图");
+        notifyStatus();
         flag = !flag;
     }
 
@@ -83,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
         }
+        notifyStatus();
     }
 
     public void reduceThumbDistance(View view) {
@@ -91,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
         }
+        notifyStatus();
     }
 
     private boolean listenerFlag;
