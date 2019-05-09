@@ -6,8 +6,10 @@
 
 <h3>效果图</h3>
 
-![github](https://github.com/oneAcorn/WeightDialView-master/blob/master/20190427_112059.gif)
-![github](https://github.com/oneAcorn/WeightDialView-master/blob/master/20190427_111630.gif)
+拖动,惯性,自动补正效果:
+![github](https://github.com/oneAcorn/WeightDialView-master/blob/master/20190509_214921.gif)
+隐藏刻度线,更改背景图,设置总刻度效果
+![github](https://github.com/oneAcorn/WeightDialView-master/blob/master/20190509_215053.gif)
 
 <h3>一 引用方法</h3>
 
@@ -106,7 +108,7 @@ dependencies {
    
 5.显示/隐藏刻度线,显示/隐藏背景图
 
-![github](https://github.com/oneAcorn/WeightDialView-master/blob/master/20190427_111630.gif)
+![github](https://github.com/oneAcorn/WeightDialView-master/blob/master/20190509_215053.gif)
 
 ```java
 weightDialView.showScaleLine(); //显示刻度线
