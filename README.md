@@ -7,8 +7,11 @@
 <h3>效果图</h3>
 
 拖动,惯性,自动补正效果:
+
 ![github](https://github.com/oneAcorn/WeightDialView-master/blob/master/20190509_214921.gif)
-隐藏刻度线,更改背景图,设置总刻度效果
+
+隐藏刻度线,更改背景图,设置总刻度效果(注:图中总刻度为12,不是60,所以松手时,指针补正至5点)
+
 ![github](https://github.com/oneAcorn/WeightDialView-master/blob/master/20190509_215053.gif)
 
 <h3>一 引用方法</h3>
