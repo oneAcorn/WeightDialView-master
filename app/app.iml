@@ -175,5 +175,22 @@
     <orderEntry type="library" scope="TEST" name="Gradle: net.sf.kxml:kxml2:2.3.0@jar" level="project" />
     <orderEntry type="module" module-name="library" />
     <orderEntry type="module" module-name="library" />
+    <orderEntry type="module" module-name="library" />
+    <orderEntry type="module" module-name="library" />
+    <orderEntry type="module" module-name="library" />
+    <orderEntry type="module" module-name="library" />
+    <orderEntry type="module" module-name="library" />
+    <orderEntry type="module" module-name="library" />
+    <orderEntry type="module" module-name="library" />
+    <orderEntry type="module" module-name="library" />
+    <orderEntry type="module" module-name="library" />
+    <orderEntry type="module" module-name="library" />
+    <orderEntry type="module" module-name="library" />
+    <orderEntry type="module" module-name="library" />
+    <orderEntry type="module" module-name="library" />
+    <orderEntry type="module" module-name="library" />
+    <orderEntry type="module" module-name="library" />
+    <orderEntry type="module" module-name="library" />
+    <orderEntry type="module" module-name="library" />
   </component>
 </module>
